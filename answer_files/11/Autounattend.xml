@@ -62,18 +62,48 @@
                     <CreatePartitions>
                         <CreatePartition wcm:action="add">
                             <Order>1</Order>
+                            <Size>350</Size>
                             <Type>Primary</Type>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>2</Order>
+                            <Size>100</Size>
+                            <Type>EFI</Type>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>3</Order>
+                            <Size>128</Size>
+                            <Type>MSR</Type>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>4</Order>
                             <Extend>true</Extend>
+                            <Type>Primary</Type>
                         </CreatePartition>
                     </CreatePartitions>
                     <ModifyPartitions>
                         <ModifyPartition wcm:action="add">
-                            <Extend>false</Extend>
-                            <Format>NTFS</Format>
-                            <Letter>C</Letter>
                             <Order>1</Order>
                             <PartitionID>1</PartitionID>
-                            <Label>Windows 11</Label>
+                            <Label>WINRE</Label>
+                            <Format>NTFS</Format>
+                            <TypeID>de94bba4-06d1-4d40-a16a-bfd50179d6ac</TypeID>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>2</Order>
+                            <PartitionID>2</PartitionID>
+                            <Label>System</Label>
+                            <Format>FAT32</Format>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>3</Order>
+                            <PartitionID>3</PartitionID>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>4</Order>
+                            <PartitionID>4</PartitionID>
+                            <Label>Windows</Label>
+                            <Format>NTFS</Format>
                         </ModifyPartition>
                     </ModifyPartitions>
                     <DiskID>0</DiskID>
@@ -98,19 +128,45 @@
 
                     Notice the addition of the `<Key>` element.
                 -->
+                <ProductKey>
+                <Key>W269N-WFGWX-YVC9B-4J6C9-T83GX</Key>
+                <WillShowUI>Never</WillShowUI>
+                </ProductKey>
             </UserData>
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <Path>reg add HKLM\System\Setup\LabConfig /v BypassTPMCheck /t reg_dword /d 0x00000001 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Path>reg add HKLM\System\Setup\LabConfig /v BypassSecureBootCheck /t reg_dword /d 0x00000001 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>3</Order>
+                    <Path>reg add HKLM\System\Setup\LabConfig /v BypassRAMCheck /t reg_dword /d 0x00000001 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>5</Order>
+                    <Path>reg add HKLM\System\Setup\LabConfig /v BypassCPUCheck /t reg_dword /d 0x00000001 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>4</Order>
+                    <Path>reg add HKLM\System\Setup\LabConfig /v BypassStorageCheck /t reg_dword /d 0x00000001 /f</Path>
+                </RunSynchronousCommand>
+            </RunSynchronous>
             <ImageInstall>
                 <OSImage>
                     <InstallTo>
                         <DiskID>0</DiskID>
-                        <PartitionID>1</PartitionID>
+                        <PartitionID>4</PartitionID>
                     </InstallTo>
                     <WillShowUI>OnError</WillShowUI>
                     <InstallToAvailablePartition>false</InstallToAvailablePartition>
                     <InstallFrom>
                         <MetaData wcm:action="add">
                             <Key>/IMAGE/NAME</Key>
-                            <Value>Windows 11 Enterprise Evaluation</Value>
+                            <Value>Windows 11 Pro</Value>
                         </MetaData>
                     </InstallFrom>
                 </OSImage>
@@ -192,13 +248,13 @@
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File a:\fixnetwork.ps1</CommandLine>
+                    <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File e:\fixnetwork.ps1</CommandLine>
                     <Description>Fix public network</Description>
                     <Order>4</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File a:\disable-winrm.ps1</CommandLine>
+                    <CommandLine>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File e:\disable-winrm.ps1</CommandLine>
                     <Description>Disable WinRM</Description>
                     <Order>5</Order>
                     <RequiresUserInput>true</RequiresUserInput>
@@ -249,16 +305,16 @@
                     <Description>Enable AutoLogon</Description>
                 </SynchronousCommand>
                 <!-- WITHOUT WINDOWS UPDATES -->
-                <!--
+                
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File a:\enable-winrm.ps1</CommandLine>
+                    <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File e:\enable-winrm.ps1</CommandLine>
                     <Description>Enable WinRM</Description>
                     <Order>99</Order>
                 </SynchronousCommand>
-                -->
+               
                 <!-- END WITHOUT WINDOWS UPDATES -->
                 <!-- WITH WINDOWS UPDATES -->
-                <SynchronousCommand wcm:action="add">
+                <!-- <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c a:\microsoft-updates.bat</CommandLine>
                     <Order>98</Order>
                     <Description>Enable Microsoft Updates</Description>
@@ -274,7 +330,7 @@
                     <Description>Install Windows Updates</Description>
                     <Order>100</Order>
                     <RequiresUserInput>true</RequiresUserInput>
-                </SynchronousCommand>
+                </SynchronousCommand> -->
                 <!-- END WITH WINDOWS UPDATES -->
             </FirstLogonCommands>
             <ShowWindowsLive>false</ShowWindowsLive>
@@ -287,7 +343,7 @@
             </OEMInformation>
             <!-- Rename computer here. -->
             <ComputerName>vagrant-11</ComputerName>
-            <TimeZone>Pacific Standard Time</TimeZone>
+            <TimeZone>Central Standard Time</TimeZone>
             <RegisteredOwner/>
         </component>
         <component xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Microsoft-Windows-Security-SPP-UX" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">

@@ -9,9 +9,11 @@
       "configuration_version": "11.0",
       "cpus": "4",
       "disk_size": "{{user `disk_size`}}",
-      "secondary_iso_images": [
-        "./win11_secondary.iso"
+      "cd_files": [
+        "./answer_files/11/Autounattend.xml",
+        "./scripts/*"
       ],
+      "cd_label" : "cipackerdata",
       "enable_secure_boot": false,
       "generation": "2",
       "guest_additions_mode": "none",
@@ -66,6 +68,10 @@
         "./scripts/compact.bat"
       ],
       "type": "windows-shell"
+    },
+    {
+      "restart_timeout": "{{user `restart_timeout`}}",
+      "type": "windows-restart"
     },
     {
       "type":"ansible",
